@@ -8,7 +8,7 @@ from dionysus import data_cmp
 from dionysus import data_dim_cmp
 
 # other packages
-import tdaw.tda.diagram as dg
+import tdawavelets.persistence_diagram as dg
 import numpy as np
 
 
