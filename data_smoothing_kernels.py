@@ -138,7 +138,7 @@ class knn_gaussian_2d(_spatial_smoother_2d):
 
         return(Fxy.reshape(self.domy_params[2], self.domx_params[2]))
 
-class knn_density_2d(_spatial_smoother_2d):
+class knn_density_estimator(_spatial_smoother_2d):
 
     def __init__(self, num_neighbors, domx_params, domy_params):
 
