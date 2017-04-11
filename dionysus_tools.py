@@ -178,7 +178,7 @@ def persistence_diagram_rips(smap, p, k, max_death = None):
         if i.sign():
             b = smap[i]
 
-            if b.dimension() >= k:
+            if b.dimension() > k:
                 continue
 
             if i.unpaired():
