@@ -211,7 +211,7 @@ def compute_rips_diagram(points, k, max_death):
         None
 
     """
-
+    #...
     # get pairwise distances
     distances = PairwiseDistances(points)
 
