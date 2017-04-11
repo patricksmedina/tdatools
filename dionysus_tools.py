@@ -191,14 +191,6 @@ def persistence_diagram_rips(smap, p, k, max_death = None):
 
             d = smap[i.pair()]
 
-            # if b.data != d.data:
-            #     if max_death is not None:
-            #         new_pd.append([b.dimension(), b.data, min(d.data, max_death)])
-            #     else:
-            #         new_pd.append([b.dimension(), b.data, d.data])
-            #
-            #     continue
-
     # sort by homology group and
     # return as a numpy array
     new_pd.sort()
