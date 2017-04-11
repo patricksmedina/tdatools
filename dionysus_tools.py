@@ -281,7 +281,7 @@ def compute_rips_diagram(points, k, max_death):
 
     # construct persistence diagram
     smap = p.make_simplex_map(simplices)
-    pd = persistence_diagram_rips(smap, p, k, max_death):
+    pd = persistence_diagram_rips(smap, p, k, max_death)
 
     return(dg.PersistenceDiagram(PD = pd))
 
