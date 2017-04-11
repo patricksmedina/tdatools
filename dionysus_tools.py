@@ -6,6 +6,10 @@ from dionysus import StaticPersistence
 from dionysus import vertex_cmp
 from dionysus import data_cmp
 from dionysus import data_dim_cmp
+from dionysus import Rips
+from dionysus import PairwiseDistances
+from dionysus import points_file
+from dionysus import ExplicitDistances
 
 # other packages
 import tdawavelets.persistence_diagram as dg
@@ -153,6 +157,14 @@ def compute_grid_diagram(f, sublevel = True, max_death = None):
     """Workflow to construct a Persistence Diagram object from the level sets
     of the given function.
 
+    Arguments
+        1.
+
+    Returns
+        1.
+
+    Raises
+        1.
 
     """
 
@@ -185,8 +197,45 @@ def compute_grid_diagram(f, sublevel = True, max_death = None):
 
     return(dg.PersistenceDiagram(PD = pd))
 
-def compute_rips_diagram():
-    pass
+def compute_rips_diagram(points, k, max_death):
+    """Workflow to construct a Persistence Diagram object from the level sets
+    of the given function.
+
+    Arguments
+        1.
+
+    Returns
+        1.
+
+    Raises
+        None
+
+    """
+
+    # get pairwise distances
+    distances = PairwiseDistances(points)
+
+    rips = Rips(distances)
+    simplices = Filtration()
+    rips.generate(k, max_death, simplices.append)
+
+    # step to speed up computation
+    for s in simplices:
+        s.data = rips.eval(s)
+
+    # compute persistence
+    simplices.sort(data_dim_cmp)
+    p = StaticPersistence(simplices)
+    p.pair_simplices()
+
+    # construct persistence diagram
+    smap = p.make_simplex_map(simplices)
+    pd = persistence_diagram(smap, p, max_death)
+
+    return(dg.PersistenceDiagram(PD = pd))
+
+
+
 
 if __name__ == "__main__":
     """For testing and illustrative purposes only"""
