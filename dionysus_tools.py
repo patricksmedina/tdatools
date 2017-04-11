@@ -151,7 +151,58 @@ def persistence_diagram(smap, p, max_death = None):
     # sort by homology group and
     # return as a numpy array
     new_pd.sort()
-    return(np.vstack(new_pd).astype(np.float64))
+    return(np.vstack(new_pd).astype(np.float32))
+
+
+def persistence_diagram_rips(smap, p, k, max_death = None):
+    """Constructs a persistence diagram object from persistence computed in Dionysus.
+
+    Arguments:
+
+        1. smap: Simplex map from a persistence object (see Dionysus)
+        2. p: persistence object (see Dionysus)
+
+    Returns:
+
+        1. Numpy array containing the persistence diagram.
+            * Column 1: Homology group
+            * Column 2: Birth time
+            * Column 3: Death time
+    """
+
+    # list to store persistence diagram points
+    new_pd = []
+
+    # add dimension, birth, death points to persistence diagram list
+    for i in p:
+        if i.sign():
+            b = smap[i]
+
+            if b.dimension() >= k:
+                continue
+
+            if i.unpaired():
+                if max_death is not None:
+                    new_pd.append([b.dimension(), b.data, max_death])
+                else:
+                    new_pd.append([b.dimension(), b.data, np.inf])
+
+                continue
+
+            d = smap[i.pair()]
+
+            # if b.data != d.data:
+            #     if max_death is not None:
+            #         new_pd.append([b.dimension(), b.data, min(d.data, max_death)])
+            #     else:
+            #         new_pd.append([b.dimension(), b.data, d.data])
+            #
+            #     continue
+
+    # sort by homology group and
+    # return as a numpy array
+    new_pd.sort()
+    return(np.vstack(new_pd).astype(np.float32))
 
 def compute_grid_diagram(f, sublevel = True, max_death = None):
     """Workflow to construct a Persistence Diagram object from the level sets
@@ -211,7 +262,7 @@ def compute_rips_diagram(points, k, max_death):
         None
 
     """
-    
+
     # get pairwise distances
     distances = PairwiseDistances(points)
 
@@ -230,7 +281,7 @@ def compute_rips_diagram(points, k, max_death):
 
     # construct persistence diagram
     smap = p.make_simplex_map(simplices)
-    pd = persistence_diagram(smap, p, max_death)
+    pd = persistence_diagram_rips(smap, p, k, max_death):
 
     return(dg.PersistenceDiagram(PD = pd))
 
