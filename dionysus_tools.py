@@ -106,7 +106,7 @@ def levelset_filtration_2d(f, sublevel = True):
 
     return(filtration)
 
-def persistence_diagram(smap, p, max_death = None):
+def _persistence_diagram_grid(smap, p, max_death = None):
     """Constructs a persistence diagram object from persistence computed in Dionysus.
 
     Arguments:
@@ -154,7 +154,7 @@ def persistence_diagram(smap, p, max_death = None):
     return(np.vstack(new_pd).astype(np.float32))
 
 
-def persistence_diagram_rips(smap, p, k, max_death = None):
+def _persistence_diagram_rips(smap, p, k, max_death = None):
     """Constructs a persistence diagram object from persistence computed in Dionysus.
 
     Arguments:
@@ -190,10 +190,11 @@ def persistence_diagram_rips(smap, p, k, max_death = None):
                 continue
 
             d = smap[i.pair()]
+            new_pd.append([b.dimension(), b.data, d.data])
 
-    # sort by homology group and
-    # return as a numpy array
+    # sort by homology group
     new_pd.sort()
+
     return(np.vstack(new_pd).astype(np.float32))
 
 def compute_grid_diagram(f, sublevel = True, max_death = None):
