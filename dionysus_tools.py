@@ -154,7 +154,7 @@ def _persistence_diagram_grid(smap, p, max_death = None):
     return(np.vstack(new_pd).astype(np.float32))
 
 
-def _persistence_diagram_rips(smap, p, k, max_death = None):
+def _persistence_diagram_rips(smap, p, max_hom, max_death = None):
     """Constructs a persistence diagram object from persistence computed in Dionysus.
 
     Arguments:
@@ -173,12 +173,12 @@ def _persistence_diagram_rips(smap, p, k, max_death = None):
     # list to store persistence diagram points
     new_pd = []
 
-    # add dimension, birth, death points to persistence diagram list
+    # add [dimension, birth, death] points to persistence diagram list
     for i in p:
         if i.sign():
             b = smap[i]
 
-            if b.dimension() > k:
+            if b.dimension() > max_hom:
                 continue
 
             if i.unpaired():
@@ -192,10 +192,14 @@ def _persistence_diagram_rips(smap, p, k, max_death = None):
             d = smap[i.pair()]
             new_pd.append([b.dimension(), b.data, d.data])
 
-    # sort by homology group
+    # sort by homology group and convert to numpy array
     new_pd.sort()
+    new_pd = np.vstack(new_pd).astype(np.float32)
 
-    return(np.vstack(new_pd).astype(np.float32))
+    # remove features with zero persistence
+    new_pd = np.delete(new_pd, np.where(new_pd[:,2] - new_pd[:,1] == 0)[0], axis = 0)
+
+    return(new_pd)
 
 def compute_grid_diagram(f, sublevel = True, max_death = None):
     """Workflow to construct a Persistence Diagram object from the level sets
@@ -233,7 +237,7 @@ def compute_grid_diagram(f, sublevel = True, max_death = None):
     smap = p.make_simplex_map(filt)
 
     # generate numpy persistence diagram
-    pd = persistence_diagram(smap, p, max_death)
+    pd = _persistence_diagram_grid(smap, p, max_death)
 
     if not sublevel:
         pd[:, 1:] *= -1
@@ -241,7 +245,7 @@ def compute_grid_diagram(f, sublevel = True, max_death = None):
 
     return(dg.PersistenceDiagram(PD = pd))
 
-def compute_rips_diagram(points, k, max_death):
+def compute_rips_diagram(points, max_hom, max_death):
     """Workflow to construct a Persistence Diagram object from the level sets
     of the given function.
 
@@ -261,7 +265,7 @@ def compute_rips_diagram(points, k, max_death):
 
     rips = Rips(distances)
     simplices = Filtration()
-    rips.generate(k, max_death, simplices.append)
+    rips.generate(int(max_hom + 1), float(max_death), simplices.append)
 
     # step to speed up computation
     for s in simplices:
@@ -274,7 +278,8 @@ def compute_rips_diagram(points, k, max_death):
 
     # construct persistence diagram
     smap = p.make_simplex_map(simplices)
-    pd = persistence_diagram_rips(smap, p, k, max_death)
+    pd = _persistence_diagram_rips(smap, p, max_hom, max_death)
+
 
     return(dg.PersistenceDiagram(PD = pd))
 
