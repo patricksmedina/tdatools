@@ -290,7 +290,6 @@ def compute_rips_diagram(points, max_hom, max_death):
     smap = p.make_simplex_map(simplices)
     pd = _persistence_diagram_rips(smap, p, max_hom, max_death)
 
-
     return(dg.PersistenceDiagram(PD = pd))
 
 
