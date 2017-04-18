@@ -150,8 +150,25 @@ def _persistence_diagram_grid(smap, p, max_death = None):
 
     # sort by homology group and
     # return as a numpy array
-    new_pd.sort()
-    return(np.vstack(new_pd).astype(np.float32))
+    # new_pd.sort()
+    # return(np.vstack(new_pd).astype(np.float32))
+
+    new_pd = np.vstack(new_pd).astype(np.float32)
+
+    # remove features with zero persistence
+    new_pd = np.delete(new_pd, np.where(new_pd[:,2] - new_pd[:,1] == 0)[0], axis = 0)
+
+    # sort by persistence within each homology group
+    for hom in np.unique(new_pd[:,0]):
+        # get the ids of the groups associated with this homology group
+        hom_idx = np.where(new_pd[:,0] == hom)[0]
+        temp_pd = new_pd[hom_idx, 1:]
+
+        # get the sorted indices and sort the array
+        sorted_idx = np.argsort(temp_pd[:, 1] - temp_pd[:, 0])[::-1]
+        new_pd[hom_idx, 1:] = temp_pd[sorted_idx, ]
+
+    return(new_pd)
 
 
 def _persistence_diagram_rips(smap, p, max_hom, max_death = None):
